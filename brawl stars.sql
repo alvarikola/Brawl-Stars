@@ -357,18 +357,18 @@ insert into habilidad_estelar values(id_habilidad, "Arena Sepultadora", 73);
 insert into habilidad_estelar values(id_habilidad, "Minerales Curativos", 73);
 insert into habilidad_estelar values(id_habilidad, "Llamas Incendarias", 74);
 insert into habilidad_estelar values(id_habilidad, "Absorción Ígnea", 74);
-insert into habilidad_estelar values(id_habilidad, "Campo de Fuerza", 74);
-insert into habilidad_estelar values(id_habilidad, "Autodestrucción", 74);
-insert into habilidad_estelar values(id_habilidad, "Maxiboom", 75);
-insert into habilidad_estelar values(id_habilidad, "Ataque Refrescante", 75);
-insert into habilidad_estelar values(id_habilidad, "Lluvia de Cascabeles", 76);
-insert into habilidad_estelar values(id_habilidad, "Veo Veo", 76);
-insert into habilidad_estelar values(id_habilidad, "Champicombos", 77);
-insert into habilidad_estelar values(id_habilidad, "Reino de los Champiñones", 77);
-insert into habilidad_estelar values(id_habilidad, "Sed de Poder", 78);
-insert into habilidad_estelar values(id_habilidad, "Apego Excesivo", 78);
-insert into habilidad_estelar values(id_habilidad, "Exponer", 79);
-insert into habilidad_estelar values(id_habilidad, "Triturar", 79);
+insert into habilidad_estelar values(id_habilidad, "Campo de Fuerza", 75);
+insert into habilidad_estelar values(id_habilidad, "Autodestrucción", 75);
+insert into habilidad_estelar values(id_habilidad, "Maxiboom", 76);
+insert into habilidad_estelar values(id_habilidad, "Ataque Refrescante", 76);
+insert into habilidad_estelar values(id_habilidad, "Lluvia de Cascabeles", 77);
+insert into habilidad_estelar values(id_habilidad, "Veo Veo", 77);
+insert into habilidad_estelar values(id_habilidad, "Champicombos", 78);
+insert into habilidad_estelar values(id_habilidad, "Reino de los Champiñones", 78);
+insert into habilidad_estelar values(id_habilidad, "Sed de Poder", 79);
+insert into habilidad_estelar values(id_habilidad, "Apego Excesivo", 79);
+insert into habilidad_estelar values(id_habilidad, "Exponer", 80);
+insert into habilidad_estelar values(id_habilidad, "Triturar", 80);
 
 
 
@@ -623,8 +623,8 @@ insert into ataque values(id_ataque, "Puños de Furia", 3040, "Corto", "Muy Ráp
 insert into ataque values(id_ataque, "Desparrame", 1600, "Largo", "Lenta", 7);
 insert into ataque values(id_ataque, "Serenata", 1520, "Largo", "Normal", 8);
 insert into ataque values(id_ataque, "Manos de Piedra", 2760, "Corto", "Muy Rápida", 9);
-insert into ataque values(id_ataque, "Rifle Aturdidor", 2120, "Largo", "Normal", 9);
-insert into ataque values(id_ataque, "Mecha Corta", 3200, "Largo", "Normal", 10);
+insert into ataque values(id_ataque, "Rifle Aturdidor", 2120, "Largo", "Normal", 10);
+insert into ataque values(id_ataque, "Mecha Corta", 3200, "Largo", "Normal", 11);
 insert into ataque values(id_ataque, "Miniminas", 3840, "Largo", "Muy Lenta", 12);
 insert into ataque values(id_ataque, "Rayos Abrasivos", 3840, "Muy Largo",  "Normal", 13);
 insert into ataque values(id_ataque, "Balas Rebotadoras", 3200, "Muy Largo", "Muy Rápida", 14);
@@ -694,3 +694,22 @@ insert into ataque values(id_ataque, "Sombrero de Bufón", 3840, "Largo", "Norma
 insert into ataque values(id_ataque, "Champiñones", 2800, "Normal", "Muy Rápida", 78);
 insert into ataque values(id_ataque, "Garras", 2000, "Corto", "Muy Rápida", 79);
 insert into ataque values(id_ataque, "Lanceada", 1200, "Normal", "Muy Rápida", 80);
+
+
+alter table `brawl_stars`.`brawler` add index(nombre_brawler);
+alter table `brawl_stars`.`habilidad_estelar` add index(nombre_habilidad);
+alter table `brawl_stars`.`gadget` add index(nombre_gadget);
+alter table `brawl_stars`.`ataque` add index(daño);
+alter table `brawl_stars`.`super` add index(daño);
+
+create view habilidad_brawler as select nombre_brawler, nombre_habilidad from brawler inner join habilidad_estelar on brawler.id_brawler = habilidad_estelar.id_brawler;
+
+create view gadget_brawler as select nombre_brawler, nombre_gadget from brawler inner join gadget on brawler.id_brawler = gadget.id_brawler;
+
+create view ataque_brawler as select nombre_brawler, nombre_ataque, daño from brawler inner join ataque on brawler.id_brawler = ataque.id_brawler;
+
+create view super_brawler as select nombre_brawler, nombre_super, daño from brawler inner join super on brawler.id_brawler = super.id_brawler;
+
+create view brawler_completo as select nombre_brawler, nombre_habilidad, nombre_gadget, nombre_ataque, ataque.daño as daño_ataque, nombre_super, super.daño as daño_super from brawler inner join habilidad_estelar on brawler.id_brawler = habilidad_estelar.id_brawler inner join gadget on brawler.id_brawler = gadget.id_brawler inner join ataque on brawler.id_brawler = ataque.id_brawler inner join super on brawler.id_brawler = super.id_brawler;
+
+/*Realizamos una corrección en la tabla de habilidad estelar ya que uno de nuestros brawlers tenía más habilidades estelares asignadas*/
