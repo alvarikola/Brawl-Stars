@@ -17,7 +17,8 @@ id_habilidad int not null auto_increment,
 nombre_habilidad varchar(45) not null,
 id_brawler int not null,
 primary key(id_habilidad),
-foreign key(id_brawler) references brawler(id_brawler) 
+foreign key(id_brawler) references brawler(id_brawler)
+on delete restrict on update restrict
 )engine innoDB;
 
 create table gadget (
@@ -25,7 +26,8 @@ id_gadget int not null auto_increment,
 nombre_gadget varchar(45) not null,
 id_brawler int not null,
 primary key(id_gadget),
-foreign key(id_brawler) references brawler(id_brawler) 
+foreign key(id_brawler) references brawler(id_brawler)
+on delete restrict on update restrict
 )engine innoDB;
 
 create table ataque (
@@ -37,6 +39,7 @@ velocidad_recarga varchar(45) not null,
 id_brawler int not null,
 primary key(id_ataque),
 foreign key(id_brawler) references brawler(id_brawler) 
+on delete restrict on update restrict
 )engine innoDB;
 
 create table super (
@@ -47,6 +50,23 @@ alcance varchar(45),
 id_brawler int not null,
 primary key(id_super),
 foreign key(id_brawler) references brawler(id_brawler) 
+on delete restrict on update restrict
+)engine innoDB;
+
+create table jugador (
+id_jugador int not null auto_increment,
+nombre_jugador varchar(45) not null,
+copas int not null,
+primary key(id_jugador)
+)engine innoDB;
+
+create table jugador_brawler (
+id_jugador_brawler int not null auto_increment,
+id_jugador int not null,
+id_brawler int not null,
+primary key(id_jugador_brawler),
+foreign key(id_brawler) references brawler(id_brawler),
+foreign key(id_jugador) references jugador(id_jugador)
 )engine innoDB;
 
 insert into brawler values(id_brawler, "Shelly", "Shelly es la tiradora perfecta: donde pone el ojo, pone la bala. No entiende por qué Colt es quien siempre se lleva las miradas...", "Brawler inicial", "Destructora", 7400, "Rápida");
@@ -695,6 +715,47 @@ insert into ataque values(id_ataque, "Champiñones", 2800, "Normal", "Muy Rápid
 insert into ataque values(id_ataque, "Garras", 2000, "Corto", "Muy Rápida", 79);
 insert into ataque values(id_ataque, "Lanceada", 1200, "Normal", "Muy Rápida", 80);
 
+insert into jugador values(id_jugador, "Alvaro", 20000);
+insert into jugador values(id_jugador, "Andrei", 18000);
+insert into jugador values(id_jugador, "Samuel", 40000);
+insert into jugador values(id_jugador, "David", 12000);
+insert into jugador values(id_jugador, "Javier", 10000);
+
+/*Alvaro*/
+insert into jugador_brawler values(id_jugador_brawler, 1, 1);
+insert into jugador_brawler values(id_jugador_brawler, 1, 30);
+insert into jugador_brawler values(id_jugador_brawler, 1, 2);
+insert into jugador_brawler values(id_jugador_brawler, 1, 79);
+insert into jugador_brawler values(id_jugador_brawler, 1, 5);
+insert into jugador_brawler values(id_jugador_brawler, 1, 24);
+
+/*Andrei*/
+insert into jugador_brawler values(id_jugador_brawler, 2, 5);
+insert into jugador_brawler values(id_jugador_brawler, 2, 4);
+insert into jugador_brawler values(id_jugador_brawler, 2, 44);
+insert into jugador_brawler values(id_jugador_brawler, 2, 24);
+insert into jugador_brawler values(id_jugador_brawler, 2, 60);
+insert into jugador_brawler values(id_jugador_brawler, 2, 55);
+
+/*Samuel*/
+insert into jugador_brawler values(id_jugador_brawler, 3, 24);
+insert into jugador_brawler values(id_jugador_brawler, 3, 2);
+insert into jugador_brawler values(id_jugador_brawler, 3, 21);
+insert into jugador_brawler values(id_jugador_brawler, 3, 77);
+insert into jugador_brawler values(id_jugador_brawler, 3, 47);
+insert into jugador_brawler values(id_jugador_brawler, 3, 11);
+
+/*David*/
+insert into jugador_brawler values(id_jugador_brawler, 4, 4);
+insert into jugador_brawler values(id_jugador_brawler, 4, 2);
+insert into jugador_brawler values(id_jugador_brawler, 4, 1);
+
+/*Javier*/
+insert into jugador_brawler values(id_jugador_brawler, 5, 1);
+insert into jugador_brawler values(id_jugador_brawler, 5, 34);
+insert into jugador_brawler values(id_jugador_brawler, 5, 5);
+insert into jugador_brawler values(id_jugador_brawler, 5, 7);
+
 
 alter table `brawl_stars`.`brawler` add index(nombre_brawler);
 alter table `brawl_stars`.`habilidad_estelar` add index(nombre_habilidad);
@@ -710,6 +771,9 @@ create view ataque_brawler as select nombre_brawler, nombre_ataque, daño from b
 
 create view super_brawler as select nombre_brawler, nombre_super, daño from brawler inner join super on brawler.id_brawler = super.id_brawler;
 
-create view brawler_completo as select nombre_brawler, nombre_habilidad, nombre_gadget, nombre_ataque, ataque.daño as daño_ataque, nombre_super, super.daño as daño_super from brawler inner join habilidad_estelar on brawler.id_brawler = habilidad_estelar.id_brawler inner join gadget on brawler.id_brawler = gadget.id_brawler inner join ataque on brawler.id_brawler = ataque.id_brawler inner join super on brawler.id_brawler = super.id_brawler;
-
-/*Realizamos una corrección en la tabla de habilidad estelar ya que uno de nuestros brawlers tenía más habilidades estelares asignadas*/
+create view brawler_completo as select nombre_brawler, nombre_habilidad, nombre_gadget, nombre_ataque, ataque.daño as daño_ataque, nombre_super, super.daño as daño_super 
+from brawler 
+inner join habilidad_estelar on brawler.id_brawler = habilidad_estelar.id_brawler 
+inner join gadget on brawler.id_brawler = gadget.id_brawler 
+inner join ataque on brawler.id_brawler = ataque.id_brawler 
+inner join super on brawler.id_brawler = super.id_brawler;
