@@ -777,3 +777,86 @@ inner join habilidad_estelar on brawler.id_brawler = habilidad_estelar.id_brawle
 inner join gadget on brawler.id_brawler = gadget.id_brawler 
 inner join ataque on brawler.id_brawler = ataque.id_brawler 
 inner join super on brawler.id_brawler = super.id_brawler;
+
+/*El procedimiento almacenado AddJugadorConBrawler se encargará de insertar un nuevo jugador en la tabla jugador y de asignar un Brawler a este jugador en la tabla jugador_brawler. El procedimiento también devolverá el id_jugador generado.*/
+
+DELIMITER //
+
+CREATE PROCEDURE AddJugadorConBrawler(
+    IN nombre_jugador VARCHAR(45),
+    IN copas INT,
+    IN id_brawler INT,
+    OUT id_jugador INT
+)
+BEGIN
+    -- Insertar un nuevo jugador
+    INSERT INTO jugador (nombre_jugador, copas)
+    VALUES (nombre_jugador, copas);
+   
+    -- Obtener el último id_jugador insertado
+    SET id_jugador = LAST_INSERT_ID();
+   
+    -- Asignar el Brawler al nuevo jugador
+    INSERT INTO jugador_brawler (id_jugador, id_brawler)
+    VALUES (id_jugador, id_brawler);
+END //
+
+DELIMITER ;
+
+-- Declaramos la variable para recibir el ID del jugador
+-- SET @new_player_id = 0;
+
+-- Llamamos al procedimiento
+-- CALL AddJugadorConBrawler('Pepito', 1200, 1, @new_player_id);
+
+-- Consultamos el ID del nuevo jugador
+-- SELECT @new_player_id AS 'Nuevo ID de Jugador';
+
+
+
+/*La función CalcularDanioPromedioBrawler calculará el daño promedio de un Brawler, considerando tanto el daño de sus ataques como de sus super ataques. Esta función tomará el id_brawler como entrada y devolverá el daño promedio.*/
+
+DELIMITER //
+
+CREATE FUNCTION CalcularDanioPromedioBrawler(
+    id_brawler INT
+)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    DECLARE promedio DECIMAL(10,2);
+    DECLARE total_danio INT;
+    DECLARE total_ataques INT;
+
+    -- Sumar el daño de todos los ataques normales del Brawler
+    SELECT IFNULL(SUM(daño), 0) INTO total_danio
+    FROM ataque
+    WHERE id_brawler = id_brawler;
+
+    -- Sumar el daño de todos los super ataques del Brawler
+    SELECT total_danio + IFNULL(SUM(daño), 0) INTO total_danio
+    FROM super
+    WHERE id_brawler = id_brawler;
+
+    -- Contar el número de ataques y super ataques del Brawler
+    SELECT COUNT(*) INTO total_ataques
+    FROM ataque
+    WHERE id_brawler = id_brawler;
+
+    SELECT total_ataques + COUNT(*) INTO total_ataques
+    FROM super
+    WHERE id_brawler = id_brawler;
+
+    -- Calcular el promedio de daño
+    SET promedio = IF(total_ataques > 0, total_danio / total_ataques, 0);
+
+    RETURN promedio;
+END //
+
+DELIMITER ;
+
+
+-- Obtener el daño promedio del Brawler con ID 1
+-- SELECT CalcularDanioPromedioBrawler(1) AS 'Daño Promedio';
+  
+
